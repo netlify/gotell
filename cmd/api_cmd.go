@@ -69,7 +69,7 @@ func (a *API) Settings() *Settings {
 	if a.settings != nil && a.settings.Fresh() {
 		return a.settings
 	}
-	resp, err := http.Get(a.Site + "/gocomments/settings.json")
+	resp, err := http.Get(a.Site + "/netlify-comments/settings.json")
 	if err != nil {
 		return &Settings{}
 	}
@@ -99,9 +99,9 @@ func (a *API) EntryData(path string) (*EntryData, error) {
 		return nil, err
 	}
 
-	metaTag := doc.Find("#gocomments").First()
+	metaTag := doc.Find("#netlify-comments").First()
 	if metaTag.Length() == 0 {
-		return nil, fmt.Errorf("No script tag with id gocomments found for '%v'", path)
+		return nil, fmt.Errorf("No script tag with id netlify-comments found for '%v'", path)
 	}
 	entryData := &EntryData{}
 	if err := json.Unmarshal([]byte(metaTag.Text()), entryData); err != nil {

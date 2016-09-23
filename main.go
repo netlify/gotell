@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/netlify/comments/cmd"
+	"github.com/netlify/netlify-comments/cmd"
 )
 
 func main() {
