@@ -174,6 +174,7 @@ func (a *API) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	comment.IP = req.RemoteAddr
 	comment.Date = time.Now().String()
+	comment.ID = fmt.Sprintf("%v", time.Now().UnixNano())
 
 	parts := strings.Split(a.Repo, "/")
 	pathname := path.Join(
