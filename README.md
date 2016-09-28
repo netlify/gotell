@@ -53,7 +53,7 @@ NETLIFY_COMMENTS_API_ACCESS_TOKEN=1253523421313 # A Personal GitHub Access Token
 With these environment variables in place, run:
 
 ```bash
-netlify-comment api
+netlify-comments api
 ```
 
 ### Integrating with your site
