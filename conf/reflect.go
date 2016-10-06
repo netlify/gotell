@@ -1,33 +1,43 @@
 package conf
 
 import (
-	"errors"
 	"fmt"
+	"os"
 	"reflect"
+	"strconv"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
 const tagPrefix = "viper"
 
-func populateConfig(config *Config) (*Config, error) {
-	err := recursivelySet(reflect.ValueOf(config), "")
-	if err != nil {
-		return nil, err
+func populateConfig(config *Configuration) error {
+	if err := recursivelySet(reflect.ValueOf(config), ""); err != nil {
+		return errors.Wrap(err, "setting configuration values")
 	}
 
-	return config, nil
+	if config.API.Port == 0 && os.Getenv("PORT") != "" {
+		port, err := strconv.Atoi(os.Getenv("PORT"))
+		if err != nil {
+			return errors.Wrap(err, "formatting PORT into int")
+		}
+
+		config.API.Port = port
+	}
+
+	return nil
 }
 
 func recursivelySet(val reflect.Value, prefix string) error {
 	if val.Kind() != reflect.Ptr {
-		return errors.New("WTF")
+		return errors.Wrap(fmt.Errorf("unexpected value: %v", val), "expected pointer value")
 	}
 
 	// dereference
 	val = reflect.Indirect(val)
 	if val.Kind() != reflect.Struct {
-		return errors.New("FML")
+		return errors.Wrap(fmt.Errorf("unexpected value: %v", val), "expected struct value")
 	}
 
 	// grab the type for this instance
@@ -50,6 +60,9 @@ func recursivelySet(val reflect.Value, prefix string) error {
 			// you can only set with an int64 -> int
 			configVal := int64(viper.GetInt(tag))
 			thisField.SetInt(configVal)
+		case reflect.Bool:
+			configVal := viper.GetBool(tag)
+			thisField.SetBool(configVal)
 		case reflect.String:
 			configVal := viper.GetString(tag)
 			thisField.SetString(configVal)
