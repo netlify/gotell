@@ -38,7 +38,7 @@ func serveAPI(config *conf.Configuration) {
 		logrus.Fatalf("Error verifying repo: %v", err)
 	}
 
-	server := api.NewServer(config, githubClient)
+	server := api.NewServerWithVersion(config, githubClient, Version)
 	server.ListenAndServe()
 }
 

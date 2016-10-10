@@ -19,12 +19,15 @@ import (
 	"github.com/zenazn/goji/web/mutil"
 )
 
+const defaultVersion = "unknown version"
+
 type Server struct {
 	handler  http.Handler
 	config   *conf.Configuration
 	client   *github.Client
 	settings *settings
 	mutex    sync.Mutex
+	version  string
 }
 
 func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *http.Request) {
@@ -101,6 +104,15 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	w.Write(response)
 }
 
+// Index endpoint
+func (s *Server) index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	sendJSON(w, 200, map[string]string{
+		"version":     s.version,
+		"name":        "Netlify Comments",
+		"description": "Netlify Comments is an API and build tool for handling large amounts of comments for JAMstack products",
+	})
+}
+
 // ListenAndServe starts the Comments Server
 func (s *Server) ListenAndServe() error {
 	l := fmt.Sprintf("%v:%v", s.config.API.Host, s.config.API.Port)
@@ -109,15 +121,21 @@ func (s *Server) ListenAndServe() error {
 }
 
 func NewServer(config *conf.Configuration, githubClient *github.Client) *Server {
+	return NewServerWithVersion(config, githubClient, defaultVersion)
+}
+
+func NewServerWithVersion(config *conf.Configuration, githubClient *github.Client, version string) *Server {
 	s := &Server{
-		config: config,
-		client: githubClient,
+		config:  config,
+		client:  githubClient,
+		version: version,
 	}
 
 	mux := kami.New()
 	mux.LogHandler = logHandler
 	mux.Use("/", timeRequest)
 	mux.Use("/", jsonTypeRequired)
+	mux.Get("/", s.index)
 	mux.Post("/*path", s.postComment)
 
 	s.handler = cors.Default().Handler(mux)
@@ -144,6 +162,13 @@ func jsonTypeRequired(ctx context.Context, w http.ResponseWriter, r *http.Reques
 		return nil
 	}
 	return ctx
+}
+
+func sendJSON(w http.ResponseWriter, status int, obj interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	encoder := json.NewEncoder(w)
+	encoder.Encode(obj)
 }
 
 func jsonError(w http.ResponseWriter, message string, status int) {

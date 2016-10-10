@@ -14,7 +14,7 @@ func RootCommand() *cobra.Command {
 		Run: run,
 	}
 
-	rootCmd.AddCommand(buildCommand(), serveCommand(), apiCommand())
+	rootCmd.AddCommand(buildCommand(), serveCommand(), apiCommand(), &versionCmd)
 	rootCmd.PersistentFlags().StringP("config", "c", "", "the config file to use")
 
 	return &rootCmd
