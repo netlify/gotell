@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"log"
-
 	"github.com/Sirupsen/logrus"
 	"github.com/netlify/netlify-comments/conf"
 	"github.com/spf13/cobra"
@@ -21,7 +19,7 @@ func RootCommand() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	log.Printf("netlify-comments\n\n  build -- builds comments\n  serve -- starts a server\n  api -- start the api server\n")
+	execWithConfig(cmd, serveAPI)
 }
 
 func execWithConfig(cmd *cobra.Command, fn func(config *conf.Configuration)) {
