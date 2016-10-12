@@ -43,7 +43,9 @@ func LoadConfig(cmd *cobra.Command) (*Configuration, error) {
 	viper.SetDefault("threads.destination", "dist")
 	viper.SetDefault("threads.port", "9091")
 
-	viper.SetDefault("api.port", "9090")
+	if os.Getenv("PORT") == "" {
+		viper.SetDefault("api.port", "9090")
+	}
 
 	viper.SetConfigType("json")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))

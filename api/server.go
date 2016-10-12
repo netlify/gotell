@@ -157,7 +157,7 @@ func logHandler(ctx context.Context, wp mutil.WriterProxy, req *http.Request) {
 }
 
 func jsonTypeRequired(ctx context.Context, w http.ResponseWriter, r *http.Request) context.Context {
-	if r.Header.Get("Content-Type") != "application/json" {
+	if r.Method == "POST" && r.Header.Get("Content-Type") != "application/json" {
 		http.Error(w, "Content-Type must be application/json", 422)
 		return nil
 	}
