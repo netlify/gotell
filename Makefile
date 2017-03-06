@@ -6,7 +6,7 @@ help: ## Show this help.
 all: test build ## Run the tests and build the binary.
 
 build: ## Build the binary.
-	go build -ldflags "-X github.com/netlify/netlify-comments/cmd.Version=`git rev-parse HEAD`"
+	go build -ldflags "-X github.com/netlify/gotell/cmd.Version=`git rev-parse HEAD`"
 
 deps: ## Install dependencies.
 	go get -u github.com/Masterminds/glide && glide install
