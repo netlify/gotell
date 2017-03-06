@@ -13,8 +13,8 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/google/go-github/github"
 	"github.com/guregu/kami"
-	"github.com/netlify/netlify-comments/comments"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/comments"
+	"github.com/netlify/gotell/conf"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web/mutil"
 )

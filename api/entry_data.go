@@ -30,9 +30,9 @@ func (s *Server) entryData(path string) (*entryData, error) {
 		return nil, err
 	}
 
-	metaTag := doc.Find("#netlify-comments").First()
+	metaTag := doc.Find("#gotell").First()
 	if metaTag.Length() == 0 {
-		return nil, fmt.Errorf("No script tag with id netlify-comments found for '%v'", path)
+		return nil, fmt.Errorf("No script tag with id gotell found for '%v'", path)
 	}
 	entryData := &entryData{}
 	if err := json.Unmarshal([]byte(metaTag.Text()), entryData); err != nil {

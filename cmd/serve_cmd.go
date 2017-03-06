@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/netlify/netlify-comments/comments"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/comments"
+	"github.com/netlify/gotell/conf"
 	"github.com/spf13/cobra"
 )
 

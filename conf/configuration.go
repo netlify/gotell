@@ -38,7 +38,7 @@ func LoadConfig(cmd *cobra.Command) (*Configuration, error) {
 		return nil, err
 	}
 
-	viper.SetEnvPrefix("NETLIFY_COMMENTS")
+	viper.SetEnvPrefix("gotell")
 	viper.SetDefault("threads.source", "threads")
 	viper.SetDefault("threads.destination", "dist")
 	viper.SetDefault("threads.port", "9091")
@@ -56,7 +56,7 @@ func LoadConfig(cmd *cobra.Command) (*Configuration, error) {
 	} else {
 		viper.SetConfigName("config")
 		viper.AddConfigPath("./")
-		viper.AddConfigPath("$HOME/.netlify/netlify-comments/")
+		viper.AddConfigPath("$HOME/.netlify/gotell/")
 	}
 
 	if err := viper.ReadInConfig(); err != nil && !os.IsNotExist(err) {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/guregu/kami"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/conf"
 )
 
 type Server struct {

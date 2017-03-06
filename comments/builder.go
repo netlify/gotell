@@ -12,7 +12,7 @@ import (
 	"sync"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/conf"
 )
 
 func Build(config *conf.Configuration) {
