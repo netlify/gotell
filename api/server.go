@@ -13,8 +13,8 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/google/go-github/github"
 	"github.com/guregu/kami"
-	"github.com/netlify/netlify-comments/comments"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/comments"
+	"github.com/netlify/gotell/conf"
 	"github.com/rs/cors"
 	"github.com/zenazn/goji/web/mutil"
 )
@@ -108,15 +108,15 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 func (s *Server) index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, 200, map[string]string{
 		"version":     s.version,
-		"name":        "Netlify Comments",
-		"description": "Netlify Comments is an API and build tool for handling large amounts of comments for JAMstack products",
+		"name":        "GoTell",
+		"description": "GoTell is an API and build tool for handling large amounts of comments for JAMstack products",
 	})
 }
 
 // ListenAndServe starts the Comments Server
 func (s *Server) ListenAndServe() error {
 	l := fmt.Sprintf("%v:%v", s.config.API.Host, s.config.API.Port)
-	logrus.Infof("Netlify Comments API started on: %s", l)
+	logrus.Infof("GoTell API started on: %s", l)
 	return http.ListenAndServe(l, s.handler)
 }
 
@@ -143,11 +143,11 @@ func NewServerWithVersion(config *conf.Configuration, githubClient *github.Clien
 }
 
 func timeRequest(ctx context.Context, w http.ResponseWriter, r *http.Request) context.Context {
-	return context.WithValue(ctx, "_netlify_comments_timing", time.Now())
+	return context.WithValue(ctx, "_gotell_timing", time.Now())
 }
 
 func logHandler(ctx context.Context, wp mutil.WriterProxy, req *http.Request) {
-	start := ctx.Value("_netlify_comments_timing").(time.Time)
+	start := ctx.Value("_gotell_timing").(time.Time)
 	logrus.WithFields(logrus.Fields{
 		"method":   req.Method,
 		"path":     req.URL.Path,

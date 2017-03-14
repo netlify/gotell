@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/netlify/netlify-comments/comments"
+	"github.com/netlify/gotell/comments"
 	"github.com/spf13/cobra"
 )
 

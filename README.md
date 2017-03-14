@@ -1,10 +1,10 @@
-# Netlify Comments
+# GoTell
 
 A commenting system for [JAMstack sites](https://jamstack.org).
 
 ## How it works
 
-Netlify Comments is both a build tool and a small API.
+GoTell is both a build tool and a small API.
 
 The API accepts HTTP POST requests to a thread with a JSON body like:
 
@@ -19,17 +19,17 @@ The API accepts HTTP POST requests to a thread with a JSON body like:
 }
 ```
 
-Netlify Comments will check to see that the thread exists and verify that it is
+GoTell will check to see that the thread exists and verify that it is
 still open, run some checks on the comment to classify obvious spam, and then push
 the comment to a Github repository as a JSON document.
 
-That will trigger a build through Netlify with Netlify Comments and a new version
+That will trigger a build through Netlify with GoTell and a new version
 of the thread will be pushed as a JSON file to a static endpoint.
 
 From your site, you can fetch comments and comment metadata from the static endpoint
 and let users POST new comments via the API.
 
-Netlify Comments is not a ready made comment system like Disqus or Facebook Comments,
+GoTell is not a ready made comment system like Disqus or Facebook Comments,
 but a buildingblock for making your own custom styled comments on your site.
 
 ## Getting Started
@@ -53,7 +53,7 @@ NETLIFY_COMMENTS_API_ACCESS_TOKEN=1253523421313 # A Personal GitHub Access Token
 With these environment variables in place, run:
 
 ```bash
-netlify-comments api
+gotell api
 ```
 
 ### Integrating with your site
@@ -61,10 +61,10 @@ netlify-comments api
 Each post on your static site that should have comments, needs to add a metadata tag to it's page like this:
 
 ```html
-<script id="netlify-comments" type="application/json">{"created_at":"2016-07-07T08:20:36Z"}</script>
+<script id="gotell" type="application/json">{"created_at":"2016-07-07T08:20:36Z"}</script>
 ```
 
-To configure Netlify Comments add a file called `/netlify-comments/settings.json` to your site (this is optional). It should look like this:
+To configure GoTell add a file called `/gotell/settings.json` to your site (this is optional). It should look like this:
 
 ```json
 {
@@ -106,7 +106,7 @@ fetch(COMMENT_URL + '/' + slug).then((response) => {
 });
 ```
 
-Netlify Comments also builds a file called `threadname.count.json` for each thread with a JSON
+GoTell also builds a file called `threadname.count.json` for each thread with a JSON
 object looking like:
 
 ```json
@@ -117,5 +117,5 @@ As a lower bandwidth way to fetch comment counts for a thread.
 
 ## Licence
 
-Netlify Comments is released under the [MIT License](LICENSE).
+GoTell is released under the [MIT License](LICENSE).
 Please make sure you understand its [implications and guarantees](https://writing.kemitchell.com/2016/09/21/MIT-License-Line-by-Line.html).

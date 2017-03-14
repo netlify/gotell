@@ -27,7 +27,7 @@ func (s *Server) getSettings() *settings {
 		return s.settings
 	}
 
-	resp, err := http.Get(s.config.API.SiteURL + "/netlify-comments/settings.json")
+	resp, err := http.Get(s.config.API.SiteURL + "/gotell/settings.json")
 	if err != nil {
 		return &settings{}
 	}

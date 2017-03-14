@@ -1,4 +1,4 @@
-package: github.com/netlify/netlify-comments
+package: github.com/netlify/gotell
 import:
 - package: github.com/PuerkitoBio/goquery
 - package: github.com/Sirupsen/logrus

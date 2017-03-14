@@ -8,7 +8,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/guregu/kami"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/conf"
 )
 
 type Server struct {
@@ -19,7 +19,7 @@ type Server struct {
 // ListenAndServe starts the Comments Server
 func (s *Server) ListenAndServe() error {
 	l := fmt.Sprintf("%v:%v", s.config.Threads.Host, s.config.Threads.Port)
-	logrus.Infof("Netlify Comments Server started on: %s", l)
+	logrus.Infof("GoTell Server started on: %s", l)
 	return http.ListenAndServe(l, s.handler)
 }
 

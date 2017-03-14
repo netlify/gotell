@@ -9,8 +9,8 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/google/go-github/github"
-	"github.com/netlify/netlify-comments/api"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/api"
+	"github.com/netlify/gotell/conf"
 	"github.com/spf13/cobra"
 )
 

@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"github.com/Sirupsen/logrus"
-	"github.com/netlify/netlify-comments/conf"
+	"github.com/netlify/gotell/conf"
 	"github.com/spf13/cobra"
 )
 
 func RootCommand() *cobra.Command {
 	rootCmd := cobra.Command{
-		Use: "netlify-comments",
+		Use: "gotell",
 		Run: run,
 	}
 
