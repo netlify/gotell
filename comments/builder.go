@@ -33,11 +33,9 @@ func Build(config *conf.Configuration) {
 			sem <- 1
 			wg.Add(1)
 			go func() {
-				defer func() {
-					<-sem
-					wg.Done()
-				}()
 				generate(config.Threads.Source, config.Threads.Destination, info.Name())
+				<-sem
+				wg.Done()
 			}()
 		}
 	}
@@ -54,7 +52,7 @@ func generate(source, dest, thread string) {
 	output := []*ParsedComment{}
 	for _, comment := range comments {
 		if strings.HasSuffix(comment.Name(), ".json") {
-			filePath := path.Join(source, comment.Name())
+			filePath := path.Join(source, thread, comment.Name())
 			reader, err := os.Open(filePath)
 			if err != nil {
 				log.Fatalf("Failed to open comment %v: %v", filePath, err)
