@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -15,12 +17,16 @@ import (
 	"github.com/netlify/gotell/conf"
 )
 
+var (
+	filenameRegexp = regexp.MustCompile(`(?:[^/]+)/(\d+)/(\d+)/([^/]+)`)
+)
+
 func Build(config *conf.Configuration) {
 	if err := os.MkdirAll(config.Threads.Destination, 0755); err != nil {
 		logrus.Fatalf("Failed to create output dir: %v", err)
 	}
 
-	threads, err := ioutil.ReadDir(config.Threads.Source)
+	threads, err := filepath.Glob(config.Threads.Source + "/*/*/*")
 	if err != nil {
 		logrus.Fatalf("Failed to list threads: %v", err)
 	}
@@ -28,31 +34,29 @@ func Build(config *conf.Configuration) {
 	var wg sync.WaitGroup
 	sem := make(chan int, 100)
 
-	for _, info := range threads {
-		if info.IsDir() {
-			sem <- 1
-			wg.Add(1)
-			go func() {
-				generate(config.Threads.Source, config.Threads.Destination, info.Name())
-				<-sem
-				wg.Done()
-			}()
-		}
+	for _, thread := range threads {
+		sem <- 1
+		wg.Add(1)
+		go func(t string) {
+			generate(t, config.Threads.Destination)
+			<-sem
+			wg.Done()
+		}(thread)
 	}
 
 	wg.Wait()
 }
 
-func generate(source, dest, thread string) {
-	comments, err := ioutil.ReadDir(path.Join(source, thread))
+func generate(source, dest string) {
+	comments, err := ioutil.ReadDir(source)
 	if err != nil {
-		log.Fatalf("Failed to read thread %v: %v", thread, err)
+		log.Fatalf("Failed to read thread %v: %v", source, err)
 	}
 
 	output := []*ParsedComment{}
 	for _, comment := range comments {
 		if strings.HasSuffix(comment.Name(), ".json") {
-			filePath := path.Join(source, thread, comment.Name())
+			filePath := path.Join(source, comment.Name())
 			reader, err := os.Open(filePath)
 			if err != nil {
 				log.Fatalf("Failed to open comment %v: %v", filePath, err)
@@ -68,7 +72,10 @@ func generate(source, dest, thread string) {
 		}
 	}
 
-	distPath := path.Join(dest, thread+".json")
+	matches := filenameRegexp.FindStringSubmatch(source)
+	name := matches[1] + "-" + matches[2] + "-" + matches[3]
+
+	distPath := path.Join(dest, name+".json")
 	dist, err := os.Create(distPath)
 	if err != nil {
 		log.Fatalf("Error opening output file %v: %v", distPath, err)
@@ -80,7 +87,7 @@ func generate(source, dest, thread string) {
 		log.Fatalf("Failed to encode json for %v: %v", distPath, err)
 	}
 
-	countPath := path.Join(dest, thread+".count.json")
+	countPath := path.Join(dest, name+".count.json")
 	count, err := os.Create(countPath)
 	if err != nil {
 		log.Fatalf("Error opening the count file %v: %v", countPath, err)

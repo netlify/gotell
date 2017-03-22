@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"path"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -21,6 +22,10 @@ import (
 
 const defaultVersion = "unknown version"
 
+var threadRegexp = regexp.MustCompile(`(\d+)-(\d+)-(.+)`)
+var slugify = regexp.MustCompile(`\W`)
+var squeeze = regexp.MustCompile(`-+`)
+
 type Server struct {
 	handler  http.Handler
 	config   *conf.Configuration
@@ -31,7 +36,7 @@ type Server struct {
 }
 
 func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-	entryPath := ctx.Value("path").(string)
+	entryPath := req.URL.Path
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -82,10 +87,15 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	comment.ID = fmt.Sprintf("%v", time.Now().UnixNano())
 
 	parts := strings.Split(s.config.API.Repository, "/")
+	matches := threadRegexp.FindStringSubmatch(entryData.Thread)
+	dir := matches[1] + "/" + matches[2] + "/" + matches[3]
+	name := strings.SplitAfterN(strings.ToLower(strings.TrimSpace(comment.Body[0:50])), "\n", 1)[0]
+	name = squeeze.ReplaceAllString(strings.Trim(slugify.ReplaceAllString(name, "-"), "-"), "-")
+
 	pathname := path.Join(
 		s.config.Threads.Source,
-		entryData.Thread,
-		fmt.Sprintf("%v.json", (time.Now().UnixNano()/1000000)),
+		dir,
+		fmt.Sprintf("%v-%v.json", (time.Now().UnixNano()/1000000), name),
 	)
 	content, _ := json.Marshal(comment)
 	message := "Add Comment"
