@@ -89,8 +89,8 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	parts := strings.Split(s.config.API.Repository, "/")
 	matches := threadRegexp.FindStringSubmatch(entryData.Thread)
 	dir := matches[1] + "/" + matches[2] + "/" + matches[3]
-	name := strings.SplitAfterN(strings.ToLower(strings.TrimSpace(comment.Body[0:50])), "\n", 1)[0]
-	name = squeeze.ReplaceAllString(strings.Trim(slugify.ReplaceAllString(name, "-"), "-"), "-")
+	firstParagraph := strings.SplitAfterN(strings.ToLower(strings.TrimSpace(comment.Body[0:len(comment.Body)])), "\n", 1)[0]
+	name := squeeze.ReplaceAllString(strings.Trim(slugify.ReplaceAllString(firstParagraph, "-"), "-"), "-")
 
 	pathname := path.Join(
 		s.config.Threads.Source,
@@ -98,7 +98,7 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 		fmt.Sprintf("%v-%v.json", (time.Now().UnixNano()/1000000), name),
 	)
 	content, _ := json.Marshal(comment)
-	message := "Add Comment"
+	message := firstParagraph
 	_, _, err = s.client.Repositories.CreateFile(parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
 		Message: &message,
 		Content: content,
