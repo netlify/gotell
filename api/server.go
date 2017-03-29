@@ -35,6 +35,13 @@ type Server struct {
 	version  string
 }
 
+func Min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
 func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *http.Request) {
 	entryPath := req.URL.Path
 
@@ -90,7 +97,7 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	matches := threadRegexp.FindStringSubmatch(entryData.Thread)
 	dir := matches[1] + "/" + matches[2] + "/" + matches[3]
 	firstParagraph := strings.SplitAfterN(strings.ToLower(strings.TrimSpace(comment.Body[0:len(comment.Body)])), "\n", 1)[0]
-	name := squeeze.ReplaceAllString(strings.Trim(slugify.ReplaceAllString(firstParagraph, "-"), "-"), "-")
+	name := squeeze.ReplaceAllString(strings.Trim(slugify.ReplaceAllString(firstParagraph[0:Min(50, len(firstParagraph))], "-"), "-"), "-")
 
 	pathname := path.Join(
 		s.config.Threads.Source,
