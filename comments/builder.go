@@ -101,6 +101,7 @@ func ParseRaw(data *RawComment) *ParsedComment {
 		ID:       data.ID,
 		ParentID: data.ParentID,
 		Author:   data.Author,
+		Twitter:  data.Twitter,
 		URL:      data.URL,
 		Body:     data.Body,
 		Date:     data.Date,
