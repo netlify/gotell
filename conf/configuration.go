@@ -38,7 +38,7 @@ func LoadConfig(cmd *cobra.Command) (*Configuration, error) {
 		return nil, err
 	}
 
-	viper.SetEnvPrefix("gotell")
+	viper.SetEnvPrefix("GOTELL")
 	viper.SetDefault("threads.source", "threads")
 	viper.SetDefault("threads.destination", "dist")
 	viper.SetDefault("threads.port", "9091")

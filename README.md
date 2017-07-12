@@ -45,9 +45,9 @@ Then visit [Netlify](https://app.netlify.com/signup) and pick your new repositor
 You'll need to run the API on a server. On the server, we recommend settings these environment variables:
 
 ```bash
-NETLIFY_COMMENTS_API_SITE_URL=https://mysite.example.com # URL to your static site
-NETLIFY_COMMENTS_API_REPOSITORY=user/repo # Username/repo of the GitHub repository created from netliy-comments-starter
-NETLIFY_COMMENTS_API_ACCESS_TOKEN=1253523421313 # A Personal GitHub Access Token with write permissions to the repository
+GOTELL_SITE_URL=https://mysite.example.com # URL to your static site
+GOTELL_REPOSITORY=user/repo # Username/repo of the GitHub repository created from netliy-comments-starter
+GOTELL_ACCESS_TOKEN=1253523421313 # A Personal GitHub Access Token with write permissions to the repository
 ```
 
 With these environment variables in place, run:
