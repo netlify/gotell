@@ -104,16 +104,62 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 		dir,
 		fmt.Sprintf("%v-%v.json", (time.Now().UnixNano()/1000000), name),
 	)
-	content, _ := json.Marshal(comment)
-	message := firstParagraph
-	_, _, err = s.client.Repositories.CreateFile(parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
-		Message: &message,
-		Content: content,
-	})
 
-	if err != nil {
-		jsonError(w, fmt.Sprintf("Failed to write comment: %v", err), 500)
-		return
+	content, _ := json.Marshal(comment)
+	branch := "master"
+
+	if comment.IsSuspicious() {
+		branch = "comment-" + comment.ID
+		master, _, err := s.client.Repositories.GetBranch(ctx, parts[0], parts[1], "master")
+		sha := master.Commit.GetSHA()
+		refName := "refs/heads/" + branch
+		if err != nil {
+			jsonError(w, fmt.Sprintf("Failed to write comment: %v", err), 500)
+			return
+		}
+
+		_, _, err = s.client.Git.CreateRef(ctx, parts[0], parts[1], &github.Reference{
+			Ref:    &refName,
+			Object: &github.GitObject{SHA: &sha},
+		})
+		if err != nil {
+			jsonError(w, fmt.Sprintf("Failed to create comment branch: %v", err), 500)
+			return
+		}
+		message := firstParagraph
+		_, _, err = s.client.Repositories.CreateFile(ctx, parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
+			Message: &message,
+			Content: content,
+			Branch:  &branch,
+		})
+
+		if err != nil {
+			jsonError(w, fmt.Sprintf("Failed to write comment: %v", err), 500)
+			return
+		}
+
+		pr := &github.NewPullRequest{
+			Title: &message,
+			Head:  &branch,
+			Base:  master.Name,
+		}
+		_, _, err = s.client.PullRequests.Create(ctx, parts[0], parts[1], pr)
+		if err != nil {
+			jsonError(w, fmt.Sprintf("Failed to create PR: %v", err), 500)
+			return
+		}
+	} else {
+		message := firstParagraph
+		_, _, err = s.client.Repositories.CreateFile(ctx, parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
+			Message: &message,
+			Content: content,
+			Branch:  &branch,
+		})
+
+		if err != nil {
+			jsonError(w, fmt.Sprintf("Failed to write comment: %v", err), 500)
+			return
+		}
 	}
 
 	parsedComment := comments.ParseRaw(comment)

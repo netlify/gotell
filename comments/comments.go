@@ -1,5 +1,7 @@
 package comments
 
+import "regexp"
+
 type RawComment struct {
 	ID       string `json:"id"`
 	ParentID string `json:"parent"`
@@ -21,4 +23,10 @@ type ParsedComment struct {
 	URL      string `json:"www"`
 	Body     string `json:"body"`
 	Date     string `json:"date"`
+}
+
+var urlRegexp = regexp.MustCompile("(?i)https?://")
+
+func (r *RawComment) IsSuspicious() bool {
+	return urlRegexp.MatchString(r.Author + r.Twitter + r.Email + r.Body)
 }

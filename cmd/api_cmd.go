@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -74,7 +75,9 @@ func verifyRepoAndToken(repository string, client *github.Client) error {
 	if len(parts) != 2 {
 		return fmt.Errorf("Repo format must be owner/repo - %v", repository)
 	}
-	_, _, err := client.Repositories.Get(parts[0], parts[1])
+	ctx := context.Background()
+
+	_, _, err := client.Repositories.Get(ctx, parts[0], parts[1])
 	return err
 }
 
