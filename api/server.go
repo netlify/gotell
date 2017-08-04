@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/google/go-github/github"
 	"github.com/guregu/kami"
 	"github.com/netlify/gotell/comments"
@@ -25,6 +26,7 @@ const defaultVersion = "unknown version"
 var threadRegexp = regexp.MustCompile(`(\d+)-(\d+)-(.+)`)
 var slugify = regexp.MustCompile(`\W`)
 var squeeze = regexp.MustCompile(`-+`)
+var bearerRegexp = regexp.MustCompile(`^(?:B|b)earer (\S+$)`)
 
 type Server struct {
 	handler  http.Handler
@@ -92,6 +94,7 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	comment.IP = req.RemoteAddr
 	comment.Date = time.Now().String()
 	comment.ID = fmt.Sprintf("%v", time.Now().UnixNano())
+	comment.Verified = s.verify(comment.Email, req)
 
 	parts := strings.Split(s.config.API.Repository, "/")
 	matches := threadRegexp.FindStringSubmatch(entryData.Thread)
@@ -165,6 +168,35 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	parsedComment := comments.ParseRaw(comment)
 	response, _ := json.Marshal(parsedComment)
 	w.Write(response)
+}
+
+func (s *Server) verify(email string, r *http.Request) bool {
+	authHeader := r.Header.Get("Authorized")
+	if authHeader == "" {
+		return false
+	}
+
+	matches := bearerRegexp.FindStringSubmatch(authHeader)
+	if len(matches) != 2 {
+		return false
+	}
+
+	token, err := jwt.Parse(matches[1], func(token *jwt.Token) (interface{}, error) {
+		if token.Method.Alg() != jwt.SigningMethodHS256.Name {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Method.Alg())
+		}
+		return []byte(s.config.JWT.Secret), nil
+	})
+	if err != nil {
+		return false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		claimedEmail, ok := claims["email"]
+		return ok && claimedEmail == email
+	}
+
+	return false
 }
 
 // Index endpoint
