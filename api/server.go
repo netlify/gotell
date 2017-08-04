@@ -233,7 +233,14 @@ func NewServerWithVersion(config *conf.Configuration, githubClient *github.Clien
 	mux.Get("/", s.index)
 	mux.Post("/*path", s.postComment)
 
-	s.handler = cors.Default().Handler(mux)
+	corsHandler := cors.New(cors.Options{
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Link", "X-Total-Count"},
+		AllowCredentials: true,
+	})
+
+	s.handler = corsHandler.Handler(mux)
 	return s
 }
 
