@@ -8,6 +8,7 @@ type RawComment struct {
 	Author   string `json:"author"`
 	Twitter  string `json:"twitter"`
 	Email    string `json:"email"`
+	Verified bool   `json:"verified"`
 	URL      string `json:"www"`
 	IP       string `json:"ip"`
 	Body     string `json:"body"`
@@ -18,6 +19,7 @@ type ParsedComment struct {
 	ID       string `json:"id"`
 	ParentID string `json:"parent"`
 	Author   string `json:"author"`
+	Verified bool   `json:"verified"`
 	Twitter  string `json:"twitter"`
 	MD5      string `json:"md5"`
 	URL      string `json:"www"`

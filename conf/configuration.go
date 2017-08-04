@@ -30,6 +30,10 @@ type Configuration struct {
 		Level string `mapstructure:"level" json:"level"`
 		File  string `mapstructure:"file" json:"file"`
 	} `mapstructure:"logging" json:"logging"`
+
+	JWT struct {
+		Secret string `mapstructure:"secret" json:"secret"`
+	} `mapstructure:"jwt" json:"jwt"`
 }
 
 func LoadConfig(cmd *cobra.Command) (*Configuration, error) {
