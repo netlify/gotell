@@ -171,7 +171,7 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 }
 
 func (s *Server) verify(email string, r *http.Request) bool {
-	authHeader := r.Header.Get("Authorized")
+	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		logrus.Info("No auth header")
 		return false
