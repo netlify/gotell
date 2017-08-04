@@ -11,3 +11,5 @@ import:
 - package: github.com/spf13/viper
 - package: golang.org/x/oauth2
 - package: github.com/rs/cors
+- package: github.com/dgrijalva/jwt-go
+  version: ^3.0.0
