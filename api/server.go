@@ -173,11 +173,13 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 func (s *Server) verify(email string, r *http.Request) bool {
 	authHeader := r.Header.Get("Authorized")
 	if authHeader == "" {
+		logrus.Info("No auth header")
 		return false
 	}
 
 	matches := bearerRegexp.FindStringSubmatch(authHeader)
 	if len(matches) != 2 {
+		logrus.Info("Not a bearer auth header")
 		return false
 	}
 
@@ -188,11 +190,13 @@ func (s *Server) verify(email string, r *http.Request) bool {
 		return []byte(s.config.JWT.Secret), nil
 	})
 	if err != nil {
+		logrus.Errorf("Error verifying JWT: %v", err)
 		return false
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		claimedEmail, ok := claims["email"]
+		logrus.Infof("Checking email %v from claims %v against %v", claimedEmail, claims, email)
 		return ok && claimedEmail == email
 	}
 
