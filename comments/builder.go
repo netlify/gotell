@@ -45,6 +45,33 @@ func Build(config *conf.Configuration) {
 	}
 
 	wg.Wait()
+
+	emptyPath := path.Join(config.Threads.Destination, "empty.json")
+	empty, err := os.Create(emptyPath)
+	if err != nil {
+		log.Fatalf("Error opening the empty file %v: %v", emptyPath, err)
+	}
+	defer empty.Close()
+	empty.WriteString("[]")
+
+	countPath := path.Join(config.Threads.Destination, "empty.count.json")
+	count, err := os.Create(countPath)
+	if err != nil {
+		log.Fatalf("Error opening the count file %v: %v", countPath, err)
+	}
+	defer count.Close()
+	count.WriteString(fmt.Sprintf("{\"count\": %v}", 0))
+
+	redirectsPath := path.Join(config.Threads.Destination, "_redirects")
+	redirects, err := os.Create(redirectsPath)
+	if err != nil {
+		log.Fatalf("Error opening the redirects file %v: %v", redirectsPath, err)
+	}
+	defer redirects.Close()
+	redirects.WriteString(`
+/*.count.json  /empty.count.json   200
+/*.json  /empty.json  200
+`)
 }
 
 func generate(source, dest string) {
