@@ -111,7 +111,7 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 	content, _ := json.Marshal(comment)
 	branch := "master"
 
-	if comment.IsSuspicious() {
+	if settings.RequireApproval || comment.IsSuspicious() {
 		branch = "comment-" + comment.ID
 		master, _, err := s.client.Repositories.GetBranch(ctx, parts[0], parts[1], "master")
 		sha := master.Commit.GetSHA()
