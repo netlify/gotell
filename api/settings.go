@@ -11,11 +11,12 @@ import (
 const settingsRefreshTime = 10 * time.Minute
 
 type settings struct {
-	BannedIPs      []string `json:"banned_ips"`
-	BannedKeywords []string `json:"banned_keywords"`
-	BannedEmails   []string `json:"banned_emails"`
-	TimeLimit      int      `json:"timelimit"`
-	lastLoad       time.Time
+	BannedIPs       []string `json:"banned_ips"`
+	BannedKeywords  []string `json:"banned_keywords"`
+	BannedEmails    []string `json:"banned_emails"`
+	RequireApproval bool     `json:"require_approval"`
+	TimeLimit       int      `json:"timelimit"`
+	lastLoad        time.Time
 }
 
 func (s *settings) fresh() bool {
