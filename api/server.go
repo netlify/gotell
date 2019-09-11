@@ -108,6 +108,10 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 		fmt.Sprintf("%v-%v.json", (time.Now().UnixNano()/1000000), name),
 	)
 
+	message := firstParagraph
+	if len(message) > 255 {
+		message = message[:255]
+	}
 	content, _ := json.Marshal(comment)
 	branch := "master"
 
@@ -129,7 +133,6 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 			jsonError(w, fmt.Sprintf("Failed to create comment branch: %v", err), 500)
 			return
 		}
-		message := firstParagraph
 		_, _, err = s.client.Repositories.CreateFile(ctx, parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
 			Message: &message,
 			Content: content,
@@ -152,7 +155,6 @@ func (s *Server) postComment(ctx context.Context, w http.ResponseWriter, req *ht
 			return
 		}
 	} else {
-		message := firstParagraph
 		_, _, err = s.client.Repositories.CreateFile(ctx, parts[0], parts[1], pathname, &github.RepositoryContentFileOptions{
 			Message: &message,
 			Content: content,
