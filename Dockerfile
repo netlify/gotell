@@ -1,4 +1,4 @@
-FROM calavera/go-glide:v0.12.2
+FROM golang:1.13
 
 ADD . /go/src/github.com/netlify/gotell
 

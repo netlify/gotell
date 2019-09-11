@@ -2,9 +2,9 @@
 language: go
 
 go:
-  - 1.8
+  - 1.13
 
 install: make deps
 script: make all
 notifications:
-    email: false
+  email: false
